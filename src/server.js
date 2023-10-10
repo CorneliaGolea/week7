@@ -1,8 +1,28 @@
+require("dotenv").config();
 const express = require("express");
+console.log("!!!!!!!!", process.env.MONGODB_URI);
+const mongoose = require("mongoose");
 
 const app = express();
 
 app.use(express.json());
+
+async function connection() {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log("Successfully connected");
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+connection();
+
+// const myName = "cornelia";
+
+// require("dotenv").config();
+// console.log(process.env.MY_NAME);
+// console.log(process.env.I_LIKE_CHEESE);
 
 app.get("/books", (request, response) => {
   console.log(request.originalUrl);
