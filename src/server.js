@@ -3,20 +3,11 @@ const express = require("express");
 console.log("!!!!!!!!", process.env.MONGODB_URI);
 const mongoose = require("mongoose");
 
+require("./db/connection");
+
 const app = express();
 
 app.use(express.json());
-
-async function connection() {
-  try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log("Successfully connected");
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-connection();
 
 const bookSchema = new mongoose.Schema({
   title: {
@@ -80,22 +71,37 @@ app.delete("/books", async (request, response) => {
   response.send(successResponse);
 });
 
-app.patch("/books", async (request, response) => {
-  console.log(request.originalUrl);
-  const findOneAndUpdate = await Book.findOneAndUpdate(
-    { title: request.body.title },
-    { author: request.body.author },
-    { genre: request.body.genre },
-    { returnDocument: "after" }
-  );
+// app.patch("/books", async (request, response) => {
+//   console.log(request.originalUrl);
+//   const findOneAndUpdate = await Book.findOneAndUpdate(
+//     { title: request.body.title },
+//     { author: request.body.author },
+//     { returnDocument: "after" }
+//   );
 
-  const successResponse = {
-    message: "success",
-    patchBook: patchBook,
-  };
+//   const successResponse = {
+//     message: "success",
+//     patchBook: patchBook,
+//   };
 
-  response.send(successResponse);
-});
+//   response.send(successResponse);
+// });
+
+// app.put("/books/dynamic", async (request, response) => {
+//   console.log(request.originalUrl);
+//   const findOneAndUpdate = await Book.findOneAndUpdate(
+//     { title: request.body.title },
+//     { author:  },
+//     { returnDocument: "after" }
+//   );
+
+//   const successResponse = {
+//     message: "success",
+//     patchBook: patchBook,
+//   };
+
+//   response.send(successResponse);
+// });
 
 app.post("/books", async (request, response) => {
   const newBook = await Book.create({
