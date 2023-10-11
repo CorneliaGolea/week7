@@ -18,36 +18,100 @@ async function connection() {
 
 connection();
 
+const bookSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  author: {
+    type: String,
+  },
+  genre: {
+    type: String,
+  },
+});
+
+const Book = mongoose.model("book", bookSchema);
+
 // const myName = "cornelia";
 
 // require("dotenv").config();
 // console.log(process.env.MY_NAME);
 // console.log(process.env.I_LIKE_CHEESE);
 
-app.get("/books", (request, response) => {
+app.get("/books", async (request, response) => {
   console.log(request.originalUrl);
-  const book = {
-    title: "lord of the rings",
-    author: "tolkein",
-    genre: "fantasy",
-  };
+  const books = await Book.find();
 
   const successResponse = {
     message: "success",
-    book: book,
+    books: books,
   };
 
   response.send(successResponse);
 });
 
-app.post("/books", (request, response) => {
-  console.log(request.body.title);
-  const newBook = {
+app.put("/books", async (request, response) => {
+  console.log(request.originalUrl);
+  const updateBook = await Book.findOneAndUpdate(
+    { title: request.body.title },
+    { author: request.body.author },
+    { returnDocument: "after" }
+  );
+
+  const successResponse = {
+    message: "success",
+    updateBook: updateBook,
+  };
+
+  response.send(successResponse);
+});
+
+app.delete("/books", async (request, response) => {
+  console.log(request.originalUrl);
+  const deleteBook = await Book.deleteOne({ title: "book3" });
+
+  const successResponse = {
+    message: "success",
+    deleteBook: deleteBook,
+  };
+
+  response.send(successResponse);
+});
+
+app.patch("/books", async (request, response) => {
+  console.log(request.originalUrl);
+  const findOneAndUpdate = await Book.findOneAndUpdate(
+    { title: request.body.title },
+    { author: request.body.author },
+    { genre: request.body.genre },
+    { returnDocument: "after" }
+  );
+
+  const successResponse = {
+    message: "success",
+    patchBook: patchBook,
+  };
+
+  response.send(successResponse);
+});
+
+app.post("/books", async (request, response) => {
+  const newBook = await Book.create({
     title: request.body.title,
     author: request.body.author,
     genre: request.body.genre,
-  };
-  console.log("hello world");
+  });
+  console.log("!!!!!!:", newBook);
+
+  // console.log(request.body.title);
+  // const newBook = {
+  //   title: request.body.title,
+  //   author: request.body.author,
+  //   genre: request.body.genre,
+  // };
+  // console.log("hello world");
 
   // create a book on the de(
   //     title: request.body.title,
