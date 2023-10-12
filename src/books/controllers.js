@@ -14,7 +14,7 @@ const findAllBooks = async (request, response) => {
 
 const deleteBook = async (request, response) => {
   console.log(request.originalUrl);
-  const deleteBook = await Book.deleteOne({ title: "book3" });
+  const deleteBook = await Book.deleteOne({ title: request.body.title });
 
   const successResponse = {
     message: "success",
@@ -40,11 +40,12 @@ const createBook = async (request, response) => {
   response.send(successResponse);
 };
 ////////
-const findOneAndUpdate = async (request, response) => {
+const updateAuthor = async (request, response) => {
   console.log(request.originalUrl);
   const book = await Book.findOneAndUpdate(
     { title: request.body.title },
     { author: request.body.author },
+
     { returnDocument: "after" }
   );
 
@@ -56,9 +57,79 @@ const findOneAndUpdate = async (request, response) => {
   response.send(successResponse);
 };
 
+//////////STRETCH
+const updateByTitleDynamic = async (request, response) => {
+  console.log(request.originalUrl);
+  const book = await Book.findOneAndUpdate(
+    { title: request.body.title },
+    { [request.body.key]: request.body.value },
+    { returnDocument: "after" }
+  );
+
+  const successResponse = {
+    message: "success",
+    book: book,
+  };
+
+  response.send(successResponse);
+};
+///////
+
+// const deleteAllBooks = async (request, response) => {
+//   console.log(request.originalUrl);
+//   const books = await Book.deleteMany();
+
+//   const successResponse = {
+//     message: "success",
+//     books: books,
+//   };
+
+//   response.send(successResponse);
+// };
+
+////////
+
+const deleteOneOrAll = async (request, response) => {
+  console.log(request.originalUrl);
+  let result;
+  if (!request.body.title) {
+    result = await Book.deleteMany();
+  } else if (request.body.title) {
+    result = await Book.deleteOne({ title: request.body.title });
+  }
+
+  // const books = await Book.deleteMany();
+
+  const successResponse = {
+    message: "success",
+    result: result,
+  };
+
+  response.send(successResponse);
+};
+////////////////////
+
+const findOne = async (request, response) => {
+  console.log(request.originalUrl);
+
+  const books = await Book.find({ title: request.params.title });
+
+  const successResponse = {
+    message: "success",
+    books: books,
+  };
+
+  response.send(successResponse);
+};
+
 module.exports = {
   findAllBooks: findAllBooks,
   deleteBook: deleteBook,
   createBook: createBook,
-  findOneAndUpdate: findOneAndUpdate,
+  updateAuthor: updateAuthor,
+  ///stretch
+  updateByTitleDynamic: updateByTitleDynamic,
+  // deleteAllBooks: deleteAllBooks,
+  deleteOneOrAll: deleteOneOrAll,
+  findOne: findOne,
 };
